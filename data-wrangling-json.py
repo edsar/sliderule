@@ -59,5 +59,12 @@ def flatten_json(y):
     
 df3= df.mjtheme_namecode.map(lambda json_val: json_normalize(flatten_json(json_val)))
 
+
+
 # 3. In 2. above you will notice that some entries have only the code and the name is missing. Create a dataframe with the missing names filled in.
 
+ # create a {code,name: count} dict
+# read each df row pulling out the mjtheme_namecode array
+# for each item in the mjtheme_namecode array, look for an entry in the {code,name: count} dict
+# if the entry exists, increment the count
+# else add the entry to the {code,name: count} dict  
