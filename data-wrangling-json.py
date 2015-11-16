@@ -34,9 +34,13 @@ df[["mjtheme"]].stack().value_counts()[:10]
 # [Human development, Human development]                                                           8
 # [Financial and private sector development, Financial and private sector development]             6
 
+import simplejson as json
+json.dumps(df.mjtheme_namecode[0])
+df.mjtheme_namecode.map(lambda x: json.dumps(x))
+
 df.mjtheme_namecode[0]
-json_normalize(df.mjtheme_namecode[1], meta=['code','name'])
-df2 = df.mjtheme_namecode.map(lambda json_val: json_normalize(json_val, meta=['code', 'name']))
+x = json_normalize(df.mjtheme_namecode[0], meta=['code','name'])
+y = df.mjtheme_namecode.map(lambda json_val: json_normalize(json_val[0], meta=['code', 'name']))
 json_normalize(df, 'mjtheme_namecode', ['mjtheme', 'shortname', ['info', 'governor']])
 
 def flatten_json(y):
@@ -57,8 +61,22 @@ def flatten_json(y):
     flatten(y)
     return out
     
-df3= df.mjtheme_namecode.map(lambda json_val: json_normalize(flatten_json(json_val)))
+project_themes = df.mjtheme_namecode.map(lambda json_val: flatten_json(json_val))
 
+# create a {code,name: count} dict
+# read each df row pulling out the mjtheme_namecode array
+# for each item in the mjtheme_namecode array, look for an entry in the {code,name: count} dict
+# if the entry exists, increment the count
+# else add the entry to the {code,name: count} dict
+
+for ptheme in project_themes:
+    # 
+
+d = {}
+for ptheme in project_themes:
+    themerows = ptheme
+
+<<<<<<< Updated upstream
 
 
 # 3. In 2. above you will notice that some entries have only the code and the name is missing. Create a dataframe with the missing names filled in.
@@ -68,3 +86,9 @@ df3= df.mjtheme_namecode.map(lambda json_val: json_normalize(flatten_json(json_v
 # for each item in the mjtheme_namecode array, look for an entry in the {code,name: count} dict
 # if the entry exists, increment the count
 # else add the entry to the {code,name: count} dict  
+=======
+# 3. In 2. above you will notice that some entries have only the code and the name is missing. 
+# Create a dataframe with the missing names filled in.
+
+df.aggregate("mjtheme"=null)
+>>>>>>> Stashed changes
