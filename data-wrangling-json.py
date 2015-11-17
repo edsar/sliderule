@@ -42,6 +42,7 @@ themes_json.to_json('data/themes.json', orient='records')
 themes = pd.read_json('data/themes.json', orient='records')
 
 d = {}
+#d2 = {}
 df = pd.DataFrame(d)
 #x = 0
 for row in themes.iterrows():
@@ -59,12 +60,28 @@ for row in themes.iterrows():
                 pass
             else:
                 d[item["code"]] = item["name"]
+                # if d2[d[item["code"],d[item["name"]] is None:
+                #     pass
+                # else:
+                #     d2[d[item["code"],d[item["name"]] = count
             # print item["name"]
             # print k, v
             # if [item["code"], item["name"]] in dict:
             #     count = 
             #     d[item["code"], item["name"]] = count+1
 d
+#ANSWER
+# {u'1': u'Economic management',
+#  u'10': u'Rural development',
+#  u'11': u'Environment and natural resources management',
+#  u'2': u'Public sector governance',
+#  u'3': u'Rule of law',
+#  u'4': u'Financial and private sector development',
+#  u'5': u'Trade and integration',
+#  u'6': u'Social protection and risk management',
+#  u'7': u'Social dev/gender/inclusion',
+#  u'8': u'Human development',
+#  u'9': u'Urban development'}
 
 df.mjtheme_namecode[0]
 x = json_normalize(df.mjtheme_namecode[0], meta=['code','name'])
@@ -102,4 +119,4 @@ project_themes = df.mjtheme_namecode.map(lambda json_val: flatten_json(json_val)
 # 3. In 2. above you will notice that some entries have only the code and the name is missing. 
 # Create a dataframe with the missing names filled in.
 
-df.aggregate("mjtheme"=null)
+
