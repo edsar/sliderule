@@ -35,8 +35,36 @@ df[["mjtheme"]].stack().value_counts()[:10]
 # [Financial and private sector development, Financial and private sector development]             6
 
 import simplejson as json
+    
 json.dumps(df.mjtheme_namecode[0])
-df.mjtheme_namecode.map(lambda x: json.dumps(x))
+themes_json = df.mjtheme_namecode.map(lambda x: json.dumps(x))
+themes_json.to_json('data/themes.json', orient='records')
+themes = pd.read_json('data/themes.json', orient='records')
+
+d = {}
+df = pd.DataFrame(d)
+#x = 0
+for row in themes.iterrows():
+    for row_item in row[1]:
+        # print row_item
+        json_list = json.loads(row_item)
+        for item in json_list:
+            # x = x + 1 #1500 total
+            #d['code'] = item['code']
+            #d['name'] = item['name']
+            #d.update(item)
+            #df.append(item, ignore_index=True)
+            # print json_normalize(item, meta=["code","name"])
+            if item["name"] is None or item["name"]=="":
+                pass
+            else:
+                d[item["code"]] = item["name"]
+            # print item["name"]
+            # print k, v
+            # if [item["code"], item["name"]] in dict:
+            #     count = 
+            #     d[item["code"], item["name"]] = count+1
+d
 
 df.mjtheme_namecode[0]
 x = json_normalize(df.mjtheme_namecode[0], meta=['code','name'])
@@ -69,26 +97,9 @@ project_themes = df.mjtheme_namecode.map(lambda json_val: flatten_json(json_val)
 # if the entry exists, increment the count
 # else add the entry to the {code,name: count} dict
 
-for ptheme in project_themes:
-    # 
-
-d = {}
-for ptheme in project_themes:
     themerows = ptheme
 
-<<<<<<< Updated upstream
-
-
-# 3. In 2. above you will notice that some entries have only the code and the name is missing. Create a dataframe with the missing names filled in.
-
- # create a {code,name: count} dict
-# read each df row pulling out the mjtheme_namecode array
-# for each item in the mjtheme_namecode array, look for an entry in the {code,name: count} dict
-# if the entry exists, increment the count
-# else add the entry to the {code,name: count} dict  
-=======
 # 3. In 2. above you will notice that some entries have only the code and the name is missing. 
 # Create a dataframe with the missing names filled in.
 
 df.aggregate("mjtheme"=null)
->>>>>>> Stashed changes
