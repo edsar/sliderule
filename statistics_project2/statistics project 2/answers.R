@@ -50,15 +50,13 @@ nrow(white)
 #
 # Conclustion: There is a significant difference in callback rates, reject null
 #
-# TODO: Contract t.test() with inference()
-
-t.test(black$call, white$call, alternative = "less", mu = 0, var.equal = TRUE)
-t.test(black$call, white$call, alternative = "less", mu = 0)
+# TODO: Contrast t.test() with inference()
+t.test(black$call, white$call, alternative = "two.sided", mu = 0, var.equal = TRUE)
+t.test(black$call, white$call, alternative = "two.sided", mu = 0, var.equal = FALSE)
 
 # 3.Compute margin of error, confidence interval, and p-value.
 #
 # Conclusion: At 95% CI, callback rate to black applicants is lower by 23.08 to 35.18%
-#
 # TODO: Can we do multiple tests and use p-adjust to deal with FWER and FDR? 
 
 inference(black$call, white$call, est = "proportion", type = "ci", conflevel = 0.95, boot_method = "perc", method = "theoretical", success = TRUE)
@@ -71,6 +69,14 @@ inference(black$call, white$call, est = "proportion", type = "ci", conflevel = 0
 #
 # TODO: Can we do multiple tests and use p-adjust to deal with FWER and FDR?
 
-inference(black$call, white$call, est = "proportion", type = "ht", conflevel = 0.95, boot_method = "perc", method = "theoretical", alternative = "less", success = TRUE, null = 0)
+# testing for normality -- weird results?
+qqnorm(black$call)
+qqline(black$call)
+
+qqnorm(white$call)
+qqline(white$call)
+
+# using z-score test stat assuming normality
+inference(black$call, white$call, est = "proportion", type = "ht", conflevel = 0.95, boot_method = "perc", method = "theoretical", alternative = "twosided", success = TRUE, null = 0)
 
 

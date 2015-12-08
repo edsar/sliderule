@@ -42,8 +42,11 @@ sf.test(df$temperature)
 
 # 2.Is the true population mean really 98.6 degrees
 # Bring out the one sample hypothesis test! In this situation, is it approriate to apply a z-test or a t-test? How will the result be different?
-inference(df$temperature, est = "mean", method = "theoretical", type = "ci", conflevel = 0.95, boot_method = "perc")
+# Conditions for using z-test is knowing population SD AND sample size > 30.  We don't know population SD, so we'll use t-test
+# BUT since we think the data is normally distributed (given the qqnorm plot), we can use z-score
+inference(df$temperature, est = "mean", method = "theoretical", type = "ht", null=98.6, alternative="twosided", conflevel = 0.95, boot_method = "perc")
 # At 95% CI, 98.6 does not fall within the CI
+# with low p-value, we can reject null and conclude there is strong evidence that true mean is not 98.6
 
 # 3.At what temperature should we consider someone's temperature to be "abnormal"?.Start by computing the margin of error and confidence interval.
 # According to this sample, an abnormal temperature at 99% CI would be less than 98.0836 or greater than 98.4149

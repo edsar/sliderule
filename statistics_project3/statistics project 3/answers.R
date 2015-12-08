@@ -6,7 +6,7 @@
 library(stats)
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
 
-setwd("~/apps/sliderule/statistics_project3/statistics project 3")
+setwd("~/sliderule/statistics_project3/statistics project 3")
 hospital <- read.csv("clean_hospital_read_df.csv")
 
 # TO TEST ASSERTION: Rate of readmissions in trendiing down with increasing number of discharges#
@@ -46,18 +46,22 @@ summary(lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions))
 
 # Compute and report the observed significance value (or p-value).
 # Report statistical significance for α = .01.
-inference(small$Excess.Readmission.Ratio, large$Excess.Readmission.Ratio, type = "ht",
-          est = "mean", method = "theoretical", alternative = "greater", boot_method = "perc",
-          conflevel = 0.99, null = 0)
+# inference(small$Excess.Readmission.Ratio, large$Excess.Readmission.Ratio, type = "ht",
+#           est = "mean", method = "theoretical", alternative = "greater", boot_method = "perc",
+#           conflevel = 0.99, null = 0)
+
+t.test(small$Excess.Readmission.Ratio, large$Excess.Readmission.Ratio, alternative = "two.sided", mu = 0)
 
 # Discuss statistical significance and practical significance
-
+# At large enough sample sizes, significance will be found with even small differences
+# Is there practical meaning to the significant difference?
 
 # TODO Look at differences by $State
-summary(lm(hospital$Number.of.Discharges~hospital$State))
-summary(lm(hospital$Number.of.Readmissions~hospital$State))
+# TODO Look at F-stat and p-value to evaluate model fit  
+summary(lm(hospital$Number.of.Discharges~hospital$State)) #low R
+summary(lm(hospital$Number.of.Readmissions~hospital$State)) #low R
 
 
 # TODO Look at $Measure.Name
-summary(lm(hospital$Number.of.Discharges~hospital$Measure.Name))
-summary(lm(hospital$Number.of.Readmissions~hospital$Measure.Name))
+summary(lm(hospital$Number.of.Discharges~hospital$Measure.Name)) #low R
+summary(lm(hospital$Number.of.Readmissions~hospital$Measure.Name)) #low R
