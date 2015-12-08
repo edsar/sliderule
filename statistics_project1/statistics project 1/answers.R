@@ -17,10 +17,13 @@ setwd("~/sliderule/statistics_project1/statistics project 1")
 df <- read.csv("data/human_body_temperature.csv")
 
 qqnorm(df$temperature)
+qqline(df$temperature)
 
 # 1.Is the distribution of body temperatures normal? .Remember that this is a condition for the CLT, and hence the statistical tests we are using, to apply. 
 #
 # First, we'll run tests of null that distribution is normal using normality package, nortest
+# NOTE: Doing multiple tests and checking for FWER, FDR etc does not apply since it's the same data and same question (normality)
+#
 ad.test(df$temperature)
 # A = 0.5201, p-value = 0.1829
 
@@ -53,10 +56,10 @@ male <- subset(df, df$gender=="M")
 female <- subset(df, df$gender=="F")
 #inference(male, female, est = "proportion", method = "theoretical", type = "ht", conflevel = 0.95, boot_method="perc", alternative = "twosided")
 # Pooled T-test
-t.test(female$temperature, male$temperature, alternative = "less", mu=0, var.equal = TRUE)
-t.test(female$temperature, male$temperature, alternative = "less", mu=0)
+t.test(female$temperature, male$temperature, mu=0, var.equal = TRUE)
+t.test(female$temperature, male$temperature, mu=0)
 
-# p-value is much lower (closer to significant result) when male temp is response variable -- what does this mean?
-t.test(male$temperature, female$temperature, alternative = "less", mu=0, var.equal = TRUE)
-t.test(male$temperature, female$temperature, alternative = "less", mu=0)
+# Using a two-sided test
+t.test(male$temperature, female$temperature, mu=0, var.equal = TRUE)
+t.test(male$temperature, female$temperature, mu=0)
 
