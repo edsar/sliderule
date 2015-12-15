@@ -4,6 +4,7 @@
 
 # use some libraries etc
 library(stats)
+library(lsr)
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
 
 setwd("~/sliderule/statistics_project3/statistics project 3")
@@ -56,7 +57,7 @@ t.test(small$Excess.Readmission.Ratio, large$Excess.Readmission.Ratio, alternati
 # At large enough sample sizes, significance will be found with even small differences
 # Is there practical meaning to the significant difference?
 
-# TODO Look at differences by $State
+# Look at differences by $State
 # TODO Look at F-stat and p-value to evaluate model fit  
 summary(lm(hospital$Number.of.Discharges~hospital$State)) #low R
 summary(lm(hospital$Number.of.Readmissions~hospital$State)) #low R
@@ -65,3 +66,12 @@ summary(lm(hospital$Number.of.Readmissions~hospital$State)) #low R
 # TODO Look at $Measure.Name
 summary(lm(hospital$Number.of.Discharges~hospital$Measure.Name)) #low R
 summary(lm(hospital$Number.of.Readmissions~hospital$Measure.Name)) #low R
+
+# TODO eta^2 for ANOVA
+
+
+# TODO omega^2 for ANOVA
+
+
+# TODO what about effect size?
+
