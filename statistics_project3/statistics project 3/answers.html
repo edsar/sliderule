@@ -63,7 +63,7 @@ img {
 <div id="header">
 <h1 class="title">answers.R</h1>
 <h4 class="author"><em>edsar</em></h4>
-<h4 class="date"><em>Tue Dec 08 11:31:50 2015</em></h4>
+<h4 class="date"><em>Fri Dec 18 08:34:23 2015</em></h4>
 </div>
 
 
@@ -73,6 +73,7 @@ img {
 
 # use some libraries etc
 library(stats)
+library(lsr)
 load(url(&quot;http://assets.datacamp.com/course/dasi/inference.Rdata&quot;))
 
 setwd(&quot;~/sliderule/statistics_project3/statistics project 3&quot;)
@@ -194,7 +195,7 @@ t.test(small$Excess.Readmission.Ratio, large$Excess.Readmission.Ratio, alternati
 # At large enough sample sizes, significance will be found with even small differences
 # Is there practical meaning to the significant difference?
 
-# TODO Look at differences by $State
+# Look at differences by $State
 # TODO Look at F-stat and p-value to evaluate model fit  
 summary(lm(hospital$Number.of.Discharges~hospital$State)) #low R</code></pre>
 <pre><code>## 
@@ -391,6 +392,13 @@ summary(lm(hospital$Number.of.Discharges~hospital$Measure.Name)) #low R</code></
 ##   (81 observations deleted due to missingness)
 ## Multiple R-squared:  0.1097, Adjusted R-squared:  0.1094 
 ## F-statistic:   354 on 4 and 11492 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code># TODO eta^2 for ANOVA
+
+
+# TODO omega^2 for ANOVA
+
+
+# TODO what about effect size?</code></pre>
 
 
 </div>

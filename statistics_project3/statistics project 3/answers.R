@@ -19,17 +19,27 @@ hospital <- read.csv("clean_hospital_read_df.csv")
 #   2) with #discharges as a predictor, significance with so-so R-squared with smaller positive correction
 #
 summary(lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions))
+
+# add scatterplot, graphs to explore data (outliers, missing values, big relationships)
+plot(hospital$Number.of.Discharges, hospital$Number.of.Readmissions)
+
+
 summary(lm(hospital$Number.of.Readmissions~hospital$Number.of.Discharges))
 
 # In hospitals/facilities with number of discharges < 100, mean excess readmission rate is 1.023 and 63% have excess readmission rate greater than 1
 # In hospitals/facilities with number of discharges > 1000, mean excess readmission rate is 0.978 and 44% have excess readmission rate greater than 1
 small <- subset(hospital, hospital$Number.of.Discharges < 100)
+plot(small$Number.of.Discharges, small$Number.of.Readmissions)
 mean(small$Excess.Readmission.Ratio, na.rm = TRUE)
 # 1.022618
 nrow(subset(small,small$Excess.Readmission.Ratio > 1))/nrow(small)
 # 0.5918046 (less than 63% asserted)
 
 large <- subset(hospital, hospital$Number.of.Discharges > 1000)
+plot(large$Number.of.Discharges, large$Number.of.Readmissions)
+
+# add small/large flag variable, plot both with color
+
 mean(large$Excess.Readmission.Ratio, na.rm = TRUE)
 # 0.9783354
 nrow(subset(large,large$Excess.Readmission.Ratio > 1))/nrow(large)
@@ -40,6 +50,9 @@ nrow(subset(large,large$Excess.Readmission.Ratio > 1))/nrow(large)
 summary(lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions))
 
 # Smaller hospitals/facilities may be lacking necessary resources to ensure quality care and prevent complications that lead to readmissions
+# TODO find out what is separating lines
+# TODO model dummy vars and interaction terms
+
 
 # Setup an appropriate hypothesis test.
 # H0 : there is no difference in excess readmission ratio between small and large hospitals
