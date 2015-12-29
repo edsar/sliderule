@@ -5,12 +5,15 @@
 # use some libraries etc
 library(stats)
 library(lsr)
+library(data.table)
+
+# https://rstudio-pubs-static.s3.amazonaws.com/23230_b2e9b87251a2488da0fba51325e26040.html
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
 
-setwd("~/sliderule/statistics_project3/statistics project 3")
+setwd("~/apps/sliderule/statistics_project3/statistics project 3")
 hospital <- read.csv("clean_hospital_read_df.csv")
 
-# TO TEST ASSERTION: Rate of readmissions in trendiing down with increasing number of discharges#
+# TO TEST ASSERTION: Rate of readmissions in trending down with increasing number of discharges#
 #
 # TRY: Looking for inverse (negative correlation) between #discharges and #readmissions
 # 
@@ -18,6 +21,7 @@ hospital <- read.csv("clean_hospital_read_df.csv")
 #   1) with #readmissions as a prectior of #discharges, significance with so-so R-squared with positive correlation
 #   2) with #discharges as a predictor, significance with so-so R-squared with smaller positive correction
 #
+<<<<<<< Updated upstream
 summary(lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions))
 
 # add scatterplot, graphs to explore data (outliers, missing values, big relationships)
@@ -28,6 +32,26 @@ summary(lm(hospital$Number.of.Readmissions~hospital$Number.of.Discharges))
 
 # In hospitals/facilities with number of discharges < 100, mean excess readmission rate is 1.023 and 63% have excess readmission rate greater than 1
 # In hospitals/facilities with number of discharges > 1000, mean excess readmission rate is 0.978 and 44% have excess readmission rate greater than 1
+=======
+fit1 = lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions)
+summary(fit1)
+res.fit1 = resid(fit1)
+plot(hospital$Number.of.Readmissions, res.fit1, 
+     ylab="Residuals", xlab="Number of Readmissions", main="Number of Discharges") 
+abline(0, 0)                  
+
+fit2 <- lm(hospital$Number.of.Readmissions~hospital$Number.of.Discharges)
+summary(fit2)
+resid(fit2)
+plot(faithful$waiting, eruption.res, 
+     +     ylab="Residuals", xlab="Waiting Time", 
+     +     main="Old Faithful Eruptions") 
+abline(0, 0)                  # the horizon
+
+
+# TO TEST ASSERTION: In hospitals/facilities with number of discharges < 100, mean excess readmission rate is 1.023 and 63% have excess readmission rate greater than 1
+# TO TEST ASSERTION: In hospitals/facilities with number of discharges > 1000, mean excess readmission rate is 0.978 and 44% have excess readmission rate greater than 1
+>>>>>>> Stashed changes
 small <- subset(hospital, hospital$Number.of.Discharges < 100)
 plot(small$Number.of.Discharges, small$Number.of.Readmissions)
 mean(small$Excess.Readmission.Ratio, na.rm = TRUE)
@@ -48,6 +72,11 @@ nrow(subset(large,large$Excess.Readmission.Ratio > 1))/nrow(large)
 # ASSERTION:  There is a significant correlation between hospital capacity (number of discharges) and readmission rates.
 # VALIDATION: Found ~.62 adjusted R^2
 summary(lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions))
+aov.1 = aov(Number.of.Discharges~Number.of.Readmissions, data=data.table(hospital))
+summary(aov.1)
+print(model.tables(aov.1,"means"), digits=3)
+boxplot(Number.of.Discharges~Number.of.Readmissions, data=hospital)
+# TODO why does this look so strange?
 
 # Smaller hospitals/facilities may be lacking necessary resources to ensure quality care and prevent complications that lead to readmissions
 # TODO find out what is separating lines
@@ -81,7 +110,7 @@ summary(lm(hospital$Number.of.Discharges~hospital$Measure.Name)) #low R
 summary(lm(hospital$Number.of.Readmissions~hospital$Measure.Name)) #low R
 
 # TODO eta^2 for ANOVA
-
+ 
 
 # TODO omega^2 for ANOVA
 
