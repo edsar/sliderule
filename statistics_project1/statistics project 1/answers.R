@@ -12,7 +12,8 @@ library(nortest)
 
 # User inference function provide by DataCamp
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
-setwd("~/sliderule/statistics_project1/statistics project 1")
+# setwd("~/sliderule/statistics_project1/statistics project 1")
+setwd("~/apps/sliderule/statistics_project1/statistics project 1")
 
 df <- read.csv("data/human_body_temperature.csv")
 
