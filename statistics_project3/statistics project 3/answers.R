@@ -5,6 +5,7 @@
 # use some libraries etc
 library(stats)
 library(lsr)
+library(broom)
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
 
 setwd("~/sliderule/statistics_project3/statistics project 3")
@@ -18,7 +19,11 @@ hospital <- read.csv("clean_hospital_read_df.csv")
 #   1) with #readmissions as a prectior of #discharges, significance with so-so R-squared with positive correlation
 #   2) with #discharges as a predictor, significance with so-so R-squared with smaller positive correction
 #
-summary(lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions))
+fit <- lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions)
+summary(fit)
+tidy(fit)
+head(augment(fit))
+glance(fit)
 
 # add scatterplot, graphs to explore data (outliers, missing values, big relationships)
 plot(hospital$Number.of.Discharges, hospital$Number.of.Readmissions)
@@ -64,7 +69,7 @@ summary(lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions))
 #           est = "mean", method = "theoretical", alternative = "greater", boot_method = "perc",
 #           conflevel = 0.99, null = 0)
 
-t.test(small$Excess.Readmission.Ratio, large$Excess.Readmission.Ratio, alternative = "two.sided", mu = 0)
+tt <- t.test(small$Excess.Readmission.Ratio, large$Excess.Readmission.Ratio, alternative = "two.sided", mu = 0)
 
 # Discuss statistical significance and practical significance
 # At large enough sample sizes, significance will be found with even small differences
@@ -79,6 +84,20 @@ summary(lm(hospital$Number.of.Readmissions~hospital$State)) #low R
 # TODO Look at $Measure.Name
 summary(lm(hospital$Number.of.Discharges~hospital$Measure.Name)) #low R
 summary(lm(hospital$Number.of.Readmissions~hospital$Measure.Name)) #low R
+
+# Drill into State as most interesting natural subset
+aov <- aov(hospital$Number.of.Readmissions~hospital$State)
+aov
+tidy(aov)
+head(augment(aov))
+glance(aov)
+
+tuk <- TukeyHSD(aov)
+tuk
+tidy(tuk)
+head(augment(tuk))
+glance(tuk)
+
 
 # TODO eta^2 for ANOVA
 
