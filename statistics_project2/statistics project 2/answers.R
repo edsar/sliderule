@@ -22,23 +22,24 @@ library(stats)
 library(foreign)
 
 # load the data
-# setwd("~/sliderule/statistics_project2/statistics project 2")
-setwd("~/apps/sliderule/statistics_project2/statistics project 2")
+setwd("~/sliderule/statistics_project2/statistics project 2")
 data <- read.dta('data/us_job_market_discrimination.dta')
 
-# We're going to use the inference() function provided by DataCamp
+# Use inference function provide by DataCamp
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
+
+# clean data
+data$call <- as.logical(data$call)
+
+# subset for comparison
+black <- subset(data, data$race=="b")
+white <- subset(data, data$race=="w")
 
 # 1.What test is appropriate for this problem? Does CLT apply
 # check condition: samples are independent (assume yes)
 # check condition: 10% population (total population of black/white applicants in country is >10x of sample)
-# check condition: success and failure cases >10 each (yes)
 
-# Transform the data
-data$call <- as.logical(data$call)
-# Create subsets for comparison between blacks and whites
-black <- subset(data, data$race=="b")
-white <- subset(data, data$race=="w")
+# check condition: success and failure cases >10 each (yes)
 nrow(black)
 nrow(white)
 # same number of rows: 2435
@@ -47,66 +48,33 @@ nrow(white)
 # H0 = there is no difference between callback rates on resumes from blacks vs. whites 
 # HA = there is a difference between callback rates
 #
-# Conclusion: There is a significant difference in callback rates, so we reject the null
+# Conclustion: There is a significant difference in callback rates, reject null
 #
-# Contrast t.test() with prop.test()
-t.test(x=black$call, y=white$call, alternative = "two.sided", mu = 0, var.equal = TRUE)
-# why does result differ when x & y switched?
+# TODO: Contrast t.test() with inference()
+t.test(black$call, white$call, alternative = "two.sided", mu = 0, var.equal = TRUE)
 t.test(black$call, white$call, alternative = "two.sided", mu = 0, var.equal = FALSE)
-#
-# Test for normality - how do we test for normality?
-#
-# Here we are testing for normality, but are these acceptable/interpretable results?
-qqnorm(black$call)
-qqline(black$call)
-
-qqnorm(white$call)
-qqline(white$call)
-# 
-# What exactly is t.test() measuring? numeric data
-# Is prop.test() more appropriate? YES, measuring call back logical (Y/N) across populations
-#
-# from ?prop.test(): 
-# - If p is NULL and there is more than one group, the null tested is that the proportions in each group are the same.
-# - correct: a logical indicating whether Yates' continuity correction should be applied where possible.
-#
-table(data$race, data$call)
-prop.test(table(data$race, data$call), alternative = "two.sided", conf.level = 0.95, correct = FALSE)
-#
-# The 95% confidence interval estimate of the difference between "non-call" back rate of
-# black to white applicants is (0.01677773, 0.04728798)
-# In other words, at 95% CI black applicants 1.68% to 4.73% greater
-#
 
 # 3.Compute margin of error, confidence interval, and p-value.
 #
-# http://www.r-tutor.com/elementary-statistics/interval-estimation/interval-estimate-population-proportion
-#
-# 
-call.response = na.omit(data$call)
-n = length(call.response); n
-# [1] 4870
-k = sum(data$race=="b" & data$call); k
-# [1] 2435
-pbar = k/n; pbar
-# [1] 0.03223819
-SE = sqrt(pbar*(1-pbar)/n); SE
-# [1] 0.002531076
-MOE = qnorm(.975)*SE; MOE
-# [1] 0.004960817
-pbar + c(-MOE,MOE)
-# [1] 0.02727738 0.03719901
+# Conclusion: At 95% CI, callback rate to black applicants is lower by 23.08 to 35.18%
+# TODO: Can we do multiple tests and use p-adjust to deal with FWER and FDR? 
 
-
-# inference(black$call, white$call, est = "proportion", type = "ci", conflevel = 0.95, boot_method = "perc", method = "theoretical", success = TRUE)
+inference(black$call, white$call, est = "proportion", type = "ci", conflevel = 0.95, boot_method = "perc", method = "theoretical", success = TRUE)
 
 # 4.Discuss statistical significance.
 #
 # Alternative hypothesis supported that there is a difference in callback rates at 95% CI
 #
+# Conclusion: 
+#
+# TODO: Can we do multiple tests and use p-adjust to deal with FWER and FDR?
 
-# We use the z-score test statistic assuming normality
-inference(y=black$call, x=white$call, est = "proportion", type = "ht", conflevel = 0.95, boot_method = "perc", method = "theoretical", alternative = "twosided", success = TRUE, null = 0)
-# TODO: Why are inference() results different from prop.test()?
+# testing for normality -- weird results?
+qqnorm(black$call)
+qqline(black$call)
 
+qqnorm(white$call)
+qqline(white$call)
 
+# using z-score test stat assuming normality
+inference(black$call, white$call, est = "proportion", type = "ht", conflevel = 0.95, boot_method = "perc", method = "theoretical", alternative = "twosided", success = TRUE, null = 0)
