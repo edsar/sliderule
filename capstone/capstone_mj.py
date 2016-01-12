@@ -57,12 +57,15 @@ print len(violaters.index)/len(all_applicants.index) *100 , " % violators out of
 # answer: <4%
 
 
+<<<<<<< HEAD
 # partition training/test 50/50, consider 60/20/20?
 # work on training only (including CV, don't touch test)
 from sklearn import cross_validation
 features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(
 
 
+=======
+>>>>>>> origin/master
 # question: Can businesses be plotted into an interesting 2x2? (scatterplot, unsup clustering/classification, PCA?)
 # question: How do violations impact sales? (survival analysis) *interpretive, yield odds of dying from illness, dropout rates* (LOW-PRI)
 # question: Are there features that predict violations? (regression/classification) *more iterations of predictive model*
