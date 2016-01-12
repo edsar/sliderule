@@ -11,6 +11,7 @@
 
 import pandas as pd
 from sklearn import cross_validation
+from __future__ import division
 
 # load data
 sales = pd.read_csv("https://www.dropbox.com/s/yxgij2mtsou0lf0/mj-sales-transformed.csv?dl=1")
@@ -33,6 +34,14 @@ medicals["type"] = "medical"
 all_dfs = [producers, processors, retailers, medicals]
 all_applicants = pd.concat(all_dfs)
 
+# use applicants and sum sales and violations
+from re import sub
+from decimal import Decimal
+sales['Total_Sales_Num'] = Decimal(sub(r'[^\d.]', '', sales['Total_Sales'])) 
+by_license = sales.groupby("License_Number")
+by_license = violations.groupby("License_Number").count()
+
+
 # partition training/test 50/50
 # work on training only (including CV, don't touch test)
 features_train, features_test, labels_train, labels_test = cross_valiation.train_test_split(
@@ -44,6 +53,15 @@ features_train, features_test, labels_train, labels_test = cross_valiation.train
 
 # explore data -- picking up where Tableau left off
 # question: What % of companies have violations?, have businesses enter evenly? 
+violaters = pd.DataFrame(violations.groupby(['License_Number']).count())
+print "There are ",len(violations.index), " total violations."
+print "There are ", len(violaters.index), " unique violaters."
+print "There are ", len(all_applicants.index), " applicants."
+print len(violaters.index)/len(all_applicants.index) *100 , " % violators out of total applicant pool."
+# answer: <4%
+
+
+
 # question: Can businesses be plotted into an interesting 2x2? (scatterplot, unsup clustering/classification, PCA?)
 # question: How do violations impact sales? (survival analysis) *interpretive, yield odds of dying from illness, dropout rates* (LOW-PRI)
 # question: Are there features that predict violations? (regression/classification) *more iterations of predictive model*
