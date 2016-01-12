@@ -17,16 +17,26 @@ sales_only <- sales[,c(2,4)]
 aggsales <- aggregate(sales_only, by=list(sales_only$License_Number), FUN="sum")
 aggviolations <- count(violations, c('License_Number'))
 names(aggviolations)[names(aggviolations)=='freq'] <- "violation_count"
-applicants <- merge(applicants, aggsales, by='License_Number')
-applicants <- merge(applicants, aggviolations, by='License_Number')
+applicants <- merge(applicants, aggsales, by='License_Number') #inner join -> TODO left join
+applicants <- merge(applicants, aggviolations, by='License_Number') #inner join -> TODO left join
 str(applicants) # Total_Sales and violation_count should be added
 
-# add dummy variables for Suspended and Cancelled
+# is there a correlation between sales and violations? overall? in certain segments?
+summary(lm(applicants$violation_count ~ applicants$Total_Sales))
 
 
-# inference and t-test?
+# TODO add dummy variables for Suspended and Cancelled
+
+
+# TODO add dummary variables for each business Type: Producer, Processor, Retailer, Medical
+
+
+# **** export data to work in Python/sklearn *****
+
+# TODO use inference() and t-test to infer risk/sales growth from larger population of similar businesses? 
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
-tt=t.test()
+#inference()
+#tt=t.test(applicants$)
 
 
 
