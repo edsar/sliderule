@@ -5,21 +5,17 @@
 # use some libraries etc
 library(stats)
 library(lsr)
-<<<<<<< HEAD
 library(data.table)
 library(ggplot2)
 library(dplyr)
 
 # https://rstudio-pubs-static.s3.amazonaws.com/23230_b2e9b87251a2488da0fba51325e26040.html
-=======
 library(broom)
->>>>>>> origin/master
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
 
 setwd("~/sliderule/statistics_project3/statistics project 3")
 hospital <- read.csv("clean_hospital_read_df.csv")
 
-<<<<<<< HEAD
 # add scatterplot, graphs to explore data (outliers, missing values, big relationships)
 plot(hospital$Number.of.Discharges, hospital$Number.of.Readmissions)
 
@@ -124,9 +120,7 @@ ggplot(data=hospital, aes(x=Number.of.Readmissions)) +
 
 
 # TO TEST ASSERTION: Rate of readmissions in trending down with increasing number of discharges#
-=======
-# TO TEST ASSERTION: Rate of readmissions in trendiing down with increasing number of discharges#
->>>>>>> origin/master
+
 #
 # TRY: Looking for inverse (negative correlation) between #discharges and #readmissions
 # 
@@ -134,14 +128,12 @@ ggplot(data=hospital, aes(x=Number.of.Readmissions)) +
 #   1) with #readmissions as a prectior of #discharges, significance with so-so R-squared with positive correlation
 #   2) with #discharges as a predictor, significance with so-so R-squared with smaller positive correction
 #
-<<<<<<< HEAD
-=======
+
 fit <- lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions)
 summary(fit)
 tidy(fit)
 head(augment(fit))
 glance(fit)
->>>>>>> origin/master
 
 
 
@@ -150,7 +142,6 @@ summary(lm(hospital$Number.of.Readmissions~hospital$Number.of.Discharges))
 
 # In hospitals/facilities with number of discharges < 100, mean excess readmission rate is 1.023 and 63% have excess readmission rate greater than 1
 # In hospitals/facilities with number of discharges > 1000, mean excess readmission rate is 0.978 and 44% have excess readmission rate greater than 1
-<<<<<<< HEAD
 
 # fit1 = lm(hospital$Number.of.Discharges~hospital$Number.of.Readmissions)
 # summary(fit1)
@@ -161,8 +152,7 @@ summary(lm(hospital$Number.of.Readmissions~hospital$Number.of.Discharges))
 
 # TO TEST ASSERTION: In hospitals/facilities with number of discharges < 100, mean excess readmission rate is 1.023 and 63% have excess readmission rate greater than 1
 # TO TEST ASSERTION: In hospitals/facilities with number of discharges > 1000, mean excess readmission rate is 0.978 and 44% have excess readmission rate greater than 1
-=======
->>>>>>> origin/master
+
 small <- subset(hospital, hospital$Number.of.Discharges < 100)
 plot(small$Number.of.Discharges, small$Number.of.Readmissions)
 mean(small$Excess.Readmission.Ratio, na.rm = TRUE)
@@ -214,7 +204,6 @@ summary(lm(hospital$Number.of.Readmissions~hospital$State)) #low R
 summary(lm(hospital$Number.of.Discharges~hospital$Measure.Name)) #low R
 summary(lm(hospital$Number.of.Readmissions~hospital$Measure.Name)) #low R
 
-<<<<<<< HEAD
 # Look at AOV 
 aov <- aov(Excess.Readmission.Ratio~Number.of.Discharges*Number.of.Readmissions*State*Measure.Name, data=hospital)
 aov
@@ -247,7 +236,6 @@ aov
 #   non-factors ignored: Number.of.Readmissions, State, Measure.Name
 # 12: In replications(paste("~", xx), data = mf) :
 #   non-factors ignored: Number.of.Discharges, Number.of.Readmissions, State, Measure.Name
-=======
 # Drill into State as most interesting natural subset
 aov <- aov(hospital$Number.of.Readmissions~hospital$State)
 aov
@@ -270,4 +258,3 @@ glance(tuk)
 
 # TODO what about effect size?
 
->>>>>>> origin/master
