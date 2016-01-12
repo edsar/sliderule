@@ -61,7 +61,6 @@ print len(violaters.index)/len(all_applicants.index) *100 , " % violators out of
 # answer: <4%
 
 
-
 # question: Can businesses be plotted into an interesting 2x2? (scatterplot, unsup clustering/classification, PCA?)
 # question: How do violations impact sales? (survival analysis) *interpretive, yield odds of dying from illness, dropout rates* (LOW-PRI)
 # question: Are there features that predict violations? (regression/classification) *more iterations of predictive model*
