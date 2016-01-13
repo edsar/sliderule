@@ -57,6 +57,10 @@ print "There are ", len(all_applicants.index), " applicants."
 print len(violaters.index)/len(all_applicants.index) *100 , " % violators out of total applicant pool."
 # answer: <4%
 
+# ****** read in transformed applicants *****
+applicants_transformed = pd.read_csv("https://www.dropbox.com/s/s168am9a1iknwi8/applicants_transformed.csv?dl=1")
+
+
 
 # partition training/test 50/50, consider 60/20/20?
 # work on training only (including CV, don't touch test)

@@ -113,11 +113,12 @@ applicants <- dummy.data.frame(names='type', applicants, sep=":")
 
 
 # **** export data to work in Python/sklearn *****
+write.csv(applicants, "applicants_transformed.csv")
 
-# TODO use inference() and t-test to infer risk/sales growth from larger population of similar businesses? 
+# use inference() and t-test to infer risk/sales growth from larger population of similar businesses? 
 load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
 #inference()
-#tt=t.test(applicants$)
+#tt=t.test()
 
 
 
