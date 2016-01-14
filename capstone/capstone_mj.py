@@ -1,4 +1,5 @@
-
+#
+# capstone_mj-Setup.py
 #
 # Datasets: 
 #   Washington marijuana applicants from 11/03/2015 ~1800 records
@@ -10,9 +11,6 @@
 #
 
 import pandas as pd
-from sklearn import tree
-from sklearn.naive_bayes import GaussianNB
-from sklearn import cross_validation
 from __future__ import division
 
 # load data
@@ -56,30 +54,3 @@ print "There are ", len(violaters.index), " unique violaters."
 print "There are ", len(all_applicants.index), " applicants."
 print len(violaters.index)/len(all_applicants.index) *100 , " % violators out of total applicant pool."
 # answer: <4%
-
-# ****** read in transformed applicants *****
-applicants_transformed = pd.read_csv("https://www.dropbox.com/s/s168am9a1iknwi8/applicants_transformed.csv?dl=1")
-
-
-
-# partition training/test 50/50, consider 60/20/20?
-# work on training only (including CV, don't touch test)
-features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(
-
-# question: Can businesses be plotted into an interesting 2x2? (scatterplot, unsup clustering/classification, PCA?)
-# question: How do violations impact sales? (survival analysis) *interpretive, yield odds of dying from illness, dropout rates* (LOW-PRI)
-# question: Are there features that predict violations? (regression/classification) *more iterations of predictive model*
-
-
-# explore data
-# question: Does the learning model exhibit bias or variance?
-# question: Are there outliers/anomalies that we shouldn't ignore?
-
-
-# modeling risk (for de-marketing)
-# question:  Which businesses are likely to be charged with severe violations? (prediction) *more iterations of predictive model*
-
-
-# modeling opportunity (for increased banking relationship)
-# question:  Which businesses have positively forecasted sales? (R probably better-- forecast package)
-# question:  What will be total revenue quarter by quarter or region

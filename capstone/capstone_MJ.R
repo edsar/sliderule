@@ -75,8 +75,8 @@ sf.test(applicants$Total_Sales)
 # low p-values, so NOT normally distributed!
 # tested with: ad.test(rnorm(100, mean = 5, sd = 3));runif(100, min = 2, max = 4)
 
-# TODO: try to stratify into normal distributions or, 
-# TODO: try equivalent tools for non-normal distributions: http://www.isixsigma.com/tools-templates/normality/dealing-non-normal-data-strategies-and-tools/
+# NOT TODO: try to stratify into normal distributions or (assuming non-normal distribution)
+# try equivalent tools for non-normal distributions: http://www.isixsigma.com/tools-templates/normality/dealing-non-normal-data-strategies-and-tools/
 kruskal.test(list(applicants$violation_count, applicants$Total_Sales))
 kruskal.test(list(applicants$Total_Sales, applicants$violation_count)) #same!
 
@@ -108,15 +108,17 @@ summary(glm(applicants$violation_count ~ applicants$Total_Sales))
 # add dummy variables for each business Type: Producer, Processor, Retailer, Medical
 # type.dummies <- dummy('type', applicants, sep=":")
 applicants <- dummy.data.frame(names='type', applicants, sep=":")
-
+applicants$violator
 # TODO add variables for high-risk counties or cities
 
 
 # **** export data to work in Python/sklearn *****
 write.csv(applicants, "applicants_transformed.csv")
+write.csv(aggsales, "sales_by_license.csv")
+write.csv(aggviolations, "violations_by_license.csv")
 
 # use inference() and t-test to infer risk/sales growth from larger population of similar businesses? 
-load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
+# load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
 #inference()
 #tt=t.test()
 
