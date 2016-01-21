@@ -4,8 +4,9 @@ library(forecast) #consider using plot.ly for interactive forecast
 library(plyr)
 library(dummies)
 library(nortest)
-library(glmnet) #http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html
+library(glmnet) # http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html
 library(caret)
+library(Amelia) # missing value viz
 
 #
 #
@@ -19,6 +20,11 @@ applicants <- read.csv("https://www.dropbox.com/s/hw3ci1l8w55wwxw/all_applicants
 
 # for merging, match join column name
 applicants$License_Number <- applicants$License.
+
+# what's missing?
+missmap(applicants, main = "Applicants: Missing values vs observed")
+missmap(sales, main = "Sales: Missing values vs observed")
+missmap(violations, main = "Violations: Missing values vs observed")
 
 # format currency fields
 # TODO some cells have () (negative) and -
@@ -99,11 +105,6 @@ summary(applicants$ReasonAction) # most applications PENDING, not APPROVED
 summary(applicants$State.1) # 13 out of WA state businesses
 summary(applicants$type) # PROCESSOR and RETAILER most prevalent
 
-# is there a correlation between sales and violations? overall? in certain segments?
-# overall
-summary(lm(applicants$violation_count ~ applicants$Total_Sales)) # low R
-summary(glm(applicants$violation_count ~ applicants$Total_Sales)) # ???
-
 # TODO add dummy variables for Suspended/Cancelled/Destruction, since not all violations are severe
 #  - join applicants with violations and set dummy variable when violations$Penalty_Type %in% 
 #     c('Suspension', 'Cancellation of License', 'Destruction of harvestable plants')
@@ -113,10 +114,26 @@ summary(glm(applicants$violation_count ~ applicants$Total_Sales)) # ???
 applicants <- dummy.data.frame(names='type', applicants, sep=":")
 
 # TODO add variables for high-risk counties or cities
-
 applicants$violator <- applicants$violation_count > 0
 applicants$log_Total_Sales <- log(applicants$Total_Sales)
 applicants$log_Excise_Tax_Due <- log(applicants$Excise_Tax_Due)
+
+# is there a correlation between sales and violations? overall? in certain segments?
+# overall
+summary(lm(applicants$violation_count ~ applicants$Total_Sales)) # low R
+summary(glm(applicants$violation_count ~ applicants$Total_Sales)) # ???
+
+# logit regression for predicting a violator
+train <- applicants[1:4130,]
+test <- applicants[4131:5903,]
+model <- glm(violator ~ Total_Sales + Excise_Tax_Due + PrivDesc,family=binomial(link='logit'),data=train)
+summary(model) # significant: sales, tax, retailer type
+
+model <- glm(violator ~ Total_Sales + Excise_Tax_Due + ReasonAction,family=binomial(link='logit'),data=train)
+summary(model) # significant: pending, withdrawn
+
+model <- glm(violator ~ Total_Sales + Excise_Tax_Due + PrivilegeStatus,family=binomial(link='logit'),data=train)
+summary(model) # slightly significant: issued
 
 # **** export data to work in Python/sklearn *****
 write.csv(applicants, "applicants_transformed.csv")
