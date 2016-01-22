@@ -78,5 +78,3 @@ qqline(white$call)
 
 # using z-score test stat assuming normality
 inference(black$call, white$call, est = "proportion", type = "ht", conflevel = 0.95, boot_method = "perc", method = "theoretical", alternative = "twosided", success = TRUE, null = 0)
-
-
