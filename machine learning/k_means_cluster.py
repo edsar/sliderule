@@ -60,7 +60,6 @@ print df.groupby(['salary']).max()
 print "******"
 print df.groupby(['exercised_stock_options']).max()
 
-
 poi, finance_features = targetFeatureSplit( data )
 
 ### in the "clustering with 3 features" part of the mini-project,

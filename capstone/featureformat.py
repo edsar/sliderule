@@ -37,7 +37,7 @@
 import numpy as np
 import pandas as pd
 
-def createDataDict( dataframe)
+def createDataDict(df, keyname):
     """ create a dictionary of dictionaries that looks like this:
     
             { <License_Number> : {<label>:<labelValue>, <feature1>:<feature1Value>, ...}
@@ -45,15 +45,17 @@ def createDataDict( dataframe)
         for example:
             { 123456: {'violator': False, Total_Sales': 1000, 'violation_count': 2} , ...}
     
-    """
-    
-    """ for each row in dataframe, pull off license number for key, 
+         for each row in dataframe, pull off license number for key, 
         take each column name and value and add to dictionary
     """
-    
-    for license in dataframe:
-        dict = {}
-        dataframe[
+    keys = df[keyname]
+    for key in keys:
+        dict = {} """OrderedDict?
+        for col in reversed(list(df.columns)):
+            feature_values = {}
+            feature_values[col] = df[col] 
+            dict[key] = feature_values 
+         
 
 
 def featureFormat( dictionary, features, remove_NaN=True, remove_all_zeroes=True, remove_any_zeroes=False, sort_keys = False):
