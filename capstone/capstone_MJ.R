@@ -1,6 +1,6 @@
 
 library(broom) # used to neatly pass model results (model chaining/iteration)
-library(forecast) #consider using plot.ly for interactive forecast
+#library(forecast) #consider using plot.ly for interactive forecast
 library(plyr)
 library(dummies)
 library(nortest)
@@ -86,11 +86,14 @@ pearson.test(applicants$Total_Sales)
 
 # NOT TODO: try to stratify into normal distributions or (assuming non-normal distribution)
 # try equivalent tools for non-normal distributions: http://www.isixsigma.com/tools-templates/normality/dealing-non-normal-data-strategies-and-tools/
+
 kruskal.test(list(applicants$violation_count, applicants$Total_Sales))
 kruskal.test(list(applicants$Total_Sales, applicants$violation_count)) #same!
 
 # look at the violation_count distribution to test for normality
 plot(density(applicants$violation_count))
+plot(density(applicants$Total_Sales))
+
 # shapiro.test(applicants$violation_count) # limited to 5000!?
 qqnorm(applicants$violation_count)
 qqline(applicants$violation_count, col = 2)
