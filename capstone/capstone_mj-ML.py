@@ -52,7 +52,7 @@ labels = applicants["Total_Sales"]
 #labels = applicants["violator"]
 
 
-features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(features, labels, test_size=0.3, random_state=42) 
+features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(features, labels, test_size=0.3) 
 
 # question: Can businesses be plotted into an interesting 2x2? (scatterplot, unsup clustering/classification, PCA?)
 # question: How do violations impact sales? (survival analysis) *interpretive, yield odds of dying from illness, dropout rates* (LOW-PRI)
