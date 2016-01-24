@@ -1,3 +1,11 @@
+---
+title: "Washington Marijuana Business Analysis"
+author: "Ed Sarausad"
+date: "January 22, 2016"
+output: html_document
+---
+
+```{r, echo=FALSE}
 
 library(broom) # used to neatly pass model results (model chaining/iteration)
 library(forecast) #consider using plot.ly for interactive forecast
@@ -9,25 +17,47 @@ library(caret)
 library(Amelia) # missing value viz
 library(stats)
 
-#
-#
-# 1.DATASET/QUESTIONS -> 2.FEATURES -> 3.ALGORITHM -> 4.EVALUATION (rinse/repeat) 
-#
-#
+```
 
+# DATASET/QUESTIONS 
+
+The datasets for sales, violations, and businesses (applicants for marijuana business licenses)
+
+```{r, echo=FALSE}
 sales <- read.csv("https://www.dropbox.com/s/yxgij2mtsou0lf0/mj-sales-transformed.csv?dl=1")
 violations <- read.csv("https://www.dropbox.com/s/euwbe6mciu9oaw9/mj-violations-transformed.csv?dl=1")
 applicants <- read.csv("https://www.dropbox.com/s/hw3ci1l8w55wwxw/all_applicants.csv?dl=1")
 
-# for merging, match join column name
-applicants$License_Number <- applicants$License.
+```
 
-# what's missing?
+Research questions:
+(1) What is relationships between sales and violations?
+(2) What are the predictors of violations?
+(3) How can we segment the businesses (identified in applicants data) by risk (likelihood of violating)? 
+
+# DATA EXPLORATION
+
+Let's see what's missing 
+
+```{r}
 missmap(applicants, main = "Applicants: Missing values vs observed")
 missmap(sales, main = "Sales: Missing values vs observed")
 missmap(violations, main = "Violations: Missing values vs observed")
 
-# format currency fields
+```
+
+Looking for anomalies in the data
+
+```{r}
+summary(applicants$ReasonAction) # most applications PENDING, not APPROVED
+summary(applicants$State.1) # 13 out of WA state businesses
+summary(applicants$type) # PROCESSOR and RETAILER most prevalent
+
+```
+
+Format currency fields and add a tax rate, to see if tax rate is a predictor
+
+```{r}
 # TODO some cells have () (negative) and -
 sales$Total_Sales <- as.numeric(gsub("\\$","", gsub("\\,","", sales$Total_Sales))) 
 # TODO some cells have () (negative) and -
@@ -35,27 +65,23 @@ sales$Excise_Tax_Due <- as.numeric(gsub("\\$","", gsub("\\,","", sales$Excise_Ta
 # calculate a tax rate (not always 25%)
 sales$tax_rate <- sales$Excise_Tax_Due / sales$Total_Sales
 
-# use applicants and sum sales and violations
-# to get: license_number | total_sales | total_violations
-# TODO: Do I need to scale features?
+```
 
-# TODO no count??
-# aggviolations <- aggregate(violations, by=list(violations$License_Number), FUN=count)
+Aggregate sales and violations by *License_Number* which uniquely identified a marijuana business
 
-# then merge on license_number
-# applicants_with_sales <- merge(applicants, aggsales, by="License_Number")
-
+```{r eval=FALSE}
 # use applicants and aggregate sales
 sales_only <- sales[,c(2,4,5,8)]
+# BUG BUG gives an error when run through knitr, but works fine in console!
 aggsales <- aggregate(sales_only, by=list(sales_only$License_Number), FUN=sum)
 # BUG BUG aggsales$License_Number not correct!
 # why does the following line put join column in Group.1?
-# aggsales[aggsales$Group.1==413287,]
+aggsales[aggsales$Group.1==413287,]
 # HACK *replacing* value in License_Number with Group.1
 aggsales$License_Number <- aggsales$Group.1
 
 # use applicants and aggregate sales and violations
-aggviolations <- count(violations, c('License_Number'))
+# aggviolations <- count(violations, c('License_Number'))
 # NOTE: some businesses use same license to operate different business types (processor, retailer) with diff't tax treatment
 # rename count frequency to something meaningful
 names(aggviolations)[names(aggviolations)=='freq'] <- "violation_count"
@@ -66,6 +92,12 @@ applicants <- merge(applicants, aggviolations, by='License_Number', all.x=TRUE) 
 
 # check the merge!
 str(applicants) # Total_Sales and violation_count should be added
+```
+
+Handle missing values based on business assumptions
+
+```{r eval=FALSE}
+# not evaluating because of knitr/aggregate error
 
 # state missing values assumptions:
 #  sales - business has not made money or is not reporting, so setting NAs in Total_Sales, Excise_Tax_Due and tax_rate to 0
@@ -74,58 +106,44 @@ applicants$Total_Sales[is.na(applicants$Total_Sales)] <- 0
 applicants$Excise_Tax_Due[is.na(applicants$Excise_Tax_Due)] <- 0
 applicants$tax_rate[is.na(applicants$tax_rate)] <- 0
 applicants$violation_count[is.na(applicants$violation_count)] <- 0
+```
 
-# look at the distribution to test for normality
-# plot(density(applicants$Total_Sales)) # Error in plot.new() : figure margins too large
-ad.test(applicants$Total_Sales)
-cvm.test(applicants$Total_Sales)
-lillie.test(applicants$Total_Sales)
-pearson.test(applicants$Total_Sales)
-# sf.test(applicants$Total_Sales) # sample size must be between 5 and 5000
-# low p-values, so NOT normally distributed!
-# tested with: ad.test(rnorm(100, mean = 5, sd = 3));runif(100, min = 2, max = 4)
 
-# NOT TODO: try to stratify into normal distributions or (assuming non-normal distribution)
-# try equivalent tools for non-normal distributions: http://www.isixsigma.com/tools-templates/normality/dealing-non-normal-data-strategies-and-tools/
+Now looking at normality of businesses **Total_Sales** to see what we techniques we use to use statistical inference
 
-kruskal.test(list(applicants$violation_count, applicants$Total_Sales))
-kruskal.test(list(applicants$Total_Sales, applicants$violation_count)) #same!
-
-# look at the violation_count distribution to test for normality
-plot(density(applicants$violation_count))
+```{r eval=FALSE}
 plot(density(applicants$Total_Sales))
 
-# shapiro.test(applicants$violation_count) # limited to 5000!?
-qqnorm(applicants$violation_count)
-qqline(applicants$violation_count, col = 2)
-ad.test(applicants$violation_count)
-cvm.test(applicants$violation_count)
-lillie.test(applicants$violation_count)
-pearson.test(applicants$violation_count)
-# sf.test(applicants$violation_count) # limited to 5000!?
+```
 
-# look for anomalies in the data
-summary(applicants$ReasonAction) # most applications PENDING, not APPROVED
-summary(applicants$State.1) # 13 out of WA state businesses
-summary(applicants$type) # PROCESSOR and RETAILER most prevalent
+# FEATURE ENGINEERING
 
-# TODO add dummy variables for Suspended/Cancelled/Destruction, since not all violations are severe
-#  - join applicants with violations and set dummy variable when violations$Penalty_Type %in% 
-#     c('Suspension', 'Cancellation of License', 'Destruction of harvestable plants')
 
-# add dummy variables for each business Type: Producer, Processor, Retailer, Medical
-# type.dummies <- dummy('type', applicants, sep=":")
+We're interested in whether the type of business (denoted by Privilege Description **PrivDesc**) is a predictor
+
+```{r eval=FALSE}
 applicants <- dummy.data.frame(names='type', applicants, sep=":")
-
 # TODO add variables for high-risk counties or cities
 applicants$violator <- applicants$violation_count > 0
+```
+
+
+```{r eval=FALSE}
 applicants$log_Total_Sales <- log(applicants$Total_Sales)
 applicants$log_Excise_Tax_Due <- log(applicants$Excise_Tax_Due)
+```
 
-# is there a correlation between sales and violations? overall? in certain segments?
-# overall
-summary(lm(applicants$violation_count ~ applicants$Total_Sales)) # low R
-summary(glm(applicants$violation_count ~ applicants$Total_Sales)) # ???
+```{r}
+# we load transformed applicants data to be on same page after all transformations (due to knitr/aggregate conflict)
+applicants <- read.csv("https://www.dropbox.com/s/s168am9a1iknwi8/applicants_transformed.csv?dl=1")
+
+```
+
+# MODEL SELECTION
+
+We try logistic regression to predictor whether a business is a **violator**
+
+```{r}
 
 # logit regression for predicting a violator
 train <- applicants[1:4130,]
@@ -141,16 +159,9 @@ summary(model) # slightly significant: issued
 
 model <- glm(violator ~ Total_Sales + Excise_Tax_Due + tax_rate,family=binomial(link='logit'),data=train)
 summary(model) # 
+```
 
-# **** export data to work in Python/sklearn *****
-write.csv(applicants, "applicants_transformed.csv")
-write.csv(aggsales, "sales_by_license.csv")
-write.csv(aggviolations, "violations_by_license.csv")
+# MODEL EVALUATION
 
-# use inference() and t-test to infer risk/sales growth from larger population of similar businesses? 
-# load(url("http://assets.datacamp.com/course/dasi/inference.Rdata"))
-#inference()
-#tt=t.test()
-
-
+ROC (Receiver Operating Characteristic) used to evaluate model performance
 
