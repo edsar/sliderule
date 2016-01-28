@@ -8,6 +8,8 @@ library(glmnet) # http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html
 library(caret)
 library(Amelia) # missing value viz
 library(stats)
+library(lmtest)
+library(pROC)
 
 #
 #
@@ -132,6 +134,14 @@ train <- applicants[1:4130,]
 test <- applicants[4131:5903,]
 model <- glm(violator ~ Total_Sales + Excise_Tax_Due + PrivDesc,family=binomial(link='logit'),data=train)
 summary(model) # significant: sales, tax, retailer type
+# model evaluation
+varImp(model)
+pred = predict(model, newdata=test)
+accuracy <- table(pred, test[,"violator"])
+sum(diag(accuracy))/sum(accuracy)
+## [1] 0.02
+pred = predict(model, newdata=test)
+confusionMatrix(data=pred, test$violator)
 
 model <- glm(violator ~ Total_Sales + Excise_Tax_Due + ReasonAction,family=binomial(link='logit'),data=train)
 summary(model) # significant: pending, withdrawn
@@ -152,5 +162,49 @@ write.csv(aggviolations, "violations_by_license.csv")
 #inference()
 #tt=t.test()
 
+# **** read data back in as aged (handling time) *****
+applicants_lt6 <- read.csv("https://www.dropbox.com/s/35us6fp8nfcl4pr/aged_lt_6mo.csv?dl=1")
+applicants_612 <- read.csv("https://www.dropbox.com/s/ul4qdmqrcgn03fe/aged_6-12mo.csv?dl=1")
+applicants_1224 <- read.csv("https://www.dropbox.com/s/li5bes2f7yrc9a1/aged_12-24mo.csv?dl=1")
+applicants_gt24 <- read.csv("https://www.dropbox.com/s/nw6x2j40l3hsep5/aged_gt_24mo.csv?dl=1")
 
+df <- applicants_lt6
+# train with 70% of data
+split <- round(nrow(df) * .7)
+train <- df[1:split,]
+test <- df[split:nrow(df),]
+df$Total.Sales <- as.numeric(gsub("\\$","", gsub("\\,","", df$Total.Sales))) 
+df$Excise.Tax.Due <- as.numeric(gsub("\\$","", gsub("\\,","", df$Excise.Tax.Due)))
+df$Violator <- df$Violation_Count > 0
+model <- glm(Violator ~ Total.Sales + Excise.Tax.Due + Priv.Desc,family=binomial(link='logit'),data=train)
+summary(model) # significant: sales, tax, retailer type
+
+# # using caret to get stratified random data in training/test sets
+# set.seed(42)
+# # need to convert logical to factor to remove RMSE error
+# applicants_lt6$Violator <- as.factor(applicants_lt6$Violator)
+# applicants_lt6$Total.Sales <- as.numeric(levels(applicants_lt6$Total.Sales))
+# inTraining <- createDataPartition(applicants_lt6$Violator, p = 0.7, list=FALSE)
+# training <- applicants_lt6[ inTraining, ]
+# testing <- applicants_lt6[ -inTraining, ]
+
+# tuning
+
+# fitControl <- trainControl(## 10-fold CV
+#   method = "repeatedcv",
+#   number = 10,
+#   ## repeated ten times
+#   repeats = 10)
+
+# fit model
+logitFit <- train(Violator ~ Total.Sales + Excise.Tax.Due 
+                  + Priv.Desc + Reason.Action + Privilege.Status + Tax.Rate, 
+                 data = training,
+                 method = "glm",
+                 family = "binomial")
+
+# since estimates characterize predictor/response on log-odds scale, we use exp to calculate odds ratio for each predictor
+exp(coef(logitFit$finalModel))
+
+predict(logitFit, newdata=testing, type="prob")
 
