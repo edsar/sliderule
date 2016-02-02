@@ -126,7 +126,32 @@ applicants$log_Excise_Tax_Due <- log(applicants$Excise_Tax_Due)
 
 # is there a correlation between sales and violations? overall? in certain segments?
 # overall
-summary(lm(applicants$violation_count ~ applicants$Total_Sales)) # low R
+summary(lm(violation_count ~ Total_Sales, data=applicants)) # low R
+
+# load aged
+
+
+summary(lm(Total_Sales ~ City, data=applicants))
+summary(lm(Total_Sales ~ County, data=applicants))
+
+#### Multiple linear regression
+# using aged applicants
+applicants <- read.csv("https://www.dropbox.com/s/d1jwebq4nt5eg87/applicants_aged.csv?dl=1")
+fit <- lm(Total_Sales ~ City + County + State + age, data=applicants)
+coefficients(fit) # model coefficients
+confint(fit, level=0.95) # CIs for model parameters 
+fitted(fit) # predicted values
+residuals(fit) # residuals
+anova(fit) # anova table 
+vcov(fit) # covariance matrix for model parameters 
+influence(fit) # regression diagnostics
+# diagnostic plots 
+layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
+plot(fit)
+#### Multiple linear regression
+
+
+
 summary(glm(applicants$violation_count ~ applicants$Total_Sales)) # ???
 
 # logit regression for predicting a violator
