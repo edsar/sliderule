@@ -53,21 +53,30 @@ violations_details["Visited_Date"] = violations_details["Visit_Date"].apply(conv
 violations_details = violations_details.sort(["Visited_Date"], ascending=False)
 
 # Then take the "future" timeframe and set aside that part as the test set
-future_window = 90 # 90 days = 3 months
-window_begin = violations_details.head(1)["Visited_Date"] - datetime.timedelta(days = future_window)
-window_end = violations_details.head(1)["Visited_Date"]
-window_range = pd.date_range(window_begin, window_end) # ERR: Cannot convert input to Timestamp
+# future_window = 90 # 90 days = 3 months
 
-# Filter out the future window data and save to test_violations
-violations_details.set_index("Visited_Date")
-test_violations = violations_details.ix[window_begin:window_end]
-test_violations = violations_details[(violations_details["Visited_Date"] >= window_begin) & (violations_details["Visited_Date"] <= window_end)] # ERR: Series lengths must match to compare
-test_violations = violations_details.query(window_end <= violations_details["Visited_Date"] <= window_begin) # ERR: Series lengths must match to compare
+future_window = 3 # 90 days = 3 months
+window_begin = violations_details.head(1)["Visited_Date"] - datetime.timedelta(days = future_window * 30)
+# window_range = pd.date_range(window_begin.iloc[0].date(), periods=future_window, freq='D')
+window_range = pd.date_range(window_begin.iloc[0].date(), periods=future_window, freq='M')
 
-# TODO handle borderline dates
-def is_in_window (date, startdate, enddate):
-    return date > startdate & date < enddate
-    
+
+###
+# window_end = violations_details.head(1)["Visited_Date"]
+# window_range = pd.date_range(window_begin, window_end) # ERR: Cannot convert input to Timestamp
+
+# # Filter out the future window data and save to test_violations
+# violations_details.set_index("Visited_Date")
+# test_violations = violations_details.ix[window_begin:window_end]
+# test_violations = violations_details[(violations_details["Visited_Date"] >= window_begin) & (violations_details["Visited_Date"] <= window_end)] # ERR: Series lengths must match to compare
+# test_violations = violations_details.query(window_end <= violations_details["Visited_Date"] <= window_begin) # ERR: Series lengths must match to compare
+
+# # TODO handle borderline dates
+# def is_in_window (date, startdate, enddate):
+#     return date > startdate & date < enddate
+
+window_begin.iloc[0].date() in window_range
+
 train_violations = violations_details["Visited_Date"].apply(
 test_violations = violations_details[is_in_future_window]
 
