@@ -55,18 +55,20 @@ violations_details = violations_details.sort(["Visited_Date"], ascending=False)
 # Then take the "future" timeframe and set aside that part as the test set
 # future_window = 90 # 90 days = 3 months
 
-future_window = 3 # 90 days = 3 months
+# future_window = 3 # 90 days = 3 months
+future_window = 90 # 90 days = 3 months
 window_begin = violations_details.head(1)["Visited_Date"] - datetime.timedelta(days = future_window * 30)
+window_range = pd.date_range(window_begin.iloc[0].date(), periods=future_window, freq='D')
+
 # window_range = pd.date_range(window_begin.iloc[0].date(), periods=future_window, freq='D')
-window_range = pd.date_range(window_begin.iloc[0].date(), periods=future_window, freq='M')
-
-
-###
+# window_range = pd.date_range(window_begin.iloc[0].date(), periods=future_window, freq='M')
 # window_end = violations_details.head(1)["Visited_Date"]
 # window_range = pd.date_range(window_begin, window_end) # ERR: Cannot convert input to Timestamp
 
 # # Filter out the future window data and save to test_violations
-# violations_details.set_index("Visited_Date")
+violations_details.set_index("Visited_Date")
+test_violations = violations_details.ix[window_range]
+train_violations = violations_details.ix[window_range]
 # test_violations = violations_details.ix[window_begin:window_end]
 # test_violations = violations_details[(violations_details["Visited_Date"] >= window_begin) & (violations_details["Visited_Date"] <= window_end)] # ERR: Series lengths must match to compare
 # test_violations = violations_details.query(window_end <= violations_details["Visited_Date"] <= window_begin) # ERR: Series lengths must match to compare
@@ -75,15 +77,32 @@ window_range = pd.date_range(window_begin.iloc[0].date(), periods=future_window,
 # def is_in_window (date, startdate, enddate):
 #     return date > startdate & date < enddate
 
-window_begin.iloc[0].date() in window_range
+# window_begin.iloc[0].date().month in window_range.month #true
 
-train_violations = violations_details["Visited_Date"].apply(
-test_violations = violations_details[is_in_future_window]
+# def in_range (date):
+#     return date.date().month in window_range.month
+
+# from_date = 
+
+# #train_violations = filter(violations_details["Visited_Date"].date().month in window_range.month)
+# test_violations = violations_details[violations_details["Visited_Date"].month in window_range.month]
+
+# test_violations = violations_details[violations_details.
+#     apply(lambda in_range: violations_details["Visited_Date"].date().month
 
 
-features = applicants[[""Total Sales", "Excise Tax Due", "Tax Rate", "Type:Medical", "Type:Processor", "Type:Producer", "Type:Retailer"]] 
-labels = applicants["violator"]
-features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(features, labels, test_size=0.3) 
+features = violations_details[["Visited_Date", "months_old", "violation_count", "Total_Sales", "Excise_Tax_Due", "tax_rate", "type:medical", "type:processor", "type:producer", "type:retailer"]] 
+labels = violations_details["violator"]
+
+# After sorting the data, take 15% as the test set
+violations_details = violations_details.sort(["Visited_Date"], ascending=False)
+features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.15) 
 
 
+
+# TODO Classification - Supervised Learning with Logistic Regression
+# Labeled outcome is whether the company was a violator
+
+
+# TODO Cluster - Unsupervised
 
